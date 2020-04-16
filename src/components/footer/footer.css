@@ -1,0 +1,20 @@
+.footer {
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background: #6cf;
+  border-top: 1px solid #dde2ee;
+
+}
+
+.footer ul {
+  display: flex;
+  list-style: none;
+}
+
+.footer ul .link {
+  color: #4122af;
+  cursor:pointer;
+}

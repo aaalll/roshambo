@@ -1,0 +1,20 @@
+.game {
+  padding: 12px;
+}
+
+.game .g-form {
+  border: solid 1px #eaeaea;
+  border-radius: 5px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.game .g-form .title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.game .sign-off {
+  color: #4122af;
+  margin-left: 6px;
+}
