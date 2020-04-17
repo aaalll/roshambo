@@ -8,10 +8,10 @@ docker-compose build
 docker-compose up -d
 
 # view logs
-docker logs -f onboard-client
+docker logs -f roshambo-client
 
 # view ssh into container
-docker exec -it onboard-client /bin/bash
+docker exec -it roshambo-client /bin/bash
 
 ```
 
