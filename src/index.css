@@ -9,8 +9,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  flex-direction: column;
+  /* display: flex;
+  flex-direction: column; */
   height: 100%;
 }
 @media (max-width: 768px) {

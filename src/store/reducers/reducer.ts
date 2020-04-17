@@ -9,12 +9,11 @@ import {
   SET_MESSAGE,
   SET_GAMES,
   SET_CALLS,
+  SET_REFRESH,
+  SET_NEWDATA,
 
-  SET_AUTHDATA,
   LOGOUT,
-  SET_ACCOUNT,
   SET_MODAL,
-  SET_ACCOUNT_KEY
 } from 'store/actions/actions';
 
 export interface StoreState {
@@ -25,6 +24,7 @@ export interface StoreState {
   client: any;
   message: any;
   status: string;
+  refresh: string;
   games: ResponseTable;
   calls: ResponseTable;
 }
@@ -42,6 +42,7 @@ export const initialState: StoreState = {
   client: null,
   message: null,
   status: '',
+  refresh: '',
   games: {
     more: false,
     next_key: '',
@@ -84,14 +85,20 @@ export default function rootReducer(state: StoreState, action: any) {
         ...state,
         calls: action.payload.calls
       };
-
-    case SET_AUTHDATA:
+    case SET_NEWDATA:
       return {
         ...state,
-        user: action.payload.user,
-        account: action.payload.account,
-        accessToken: action.payload.accessToken
+        games: action.payload.games,
+        calls: action.payload.calls,
+        refresh: 'loaded'
       };
+    case SET_REFRESH:
+      return {
+        ...state,
+        refresh: action.payload.refresh
+      };
+
+
     case LOGOUT:
       return {
         ...state,
@@ -102,16 +109,6 @@ export default function rootReducer(state: StoreState, action: any) {
       return {
         ...state,
         modalType: action.payload.modalType
-      };
-    case SET_ACCOUNT:
-      return {
-        ...state,
-        account: action.payload.account
-      };
-    case SET_ACCOUNT_KEY:
-      return {
-        ...state,
-        key: action.payload.key
       };
   }
 

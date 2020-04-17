@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { setModal } from 'store/actions/actions';
 import { StoreContext } from 'store/reducers/reducer';
 
-import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>

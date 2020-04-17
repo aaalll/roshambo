@@ -1,4 +1,4 @@
-import React, { useContext, useState, ChangeEvent, useEffect } from 'react';
+import React, { useContext, useState, ChangeEvent } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -58,11 +58,8 @@ const UserInput: React.FC = () => {
       : [];
   const createNewGame = () => {
     createGame({ dispatch, state })(challenger);
-    //
   };
-  const handleClick = () => {
-    console.info('You clicked the Chip.');
-  };
+
   const validateName = (challenger: string) => {
     if (!challenger) {
       return 'Name required';
@@ -132,12 +129,8 @@ const UserInput: React.FC = () => {
   );
 };
 const Home: React.FC = () => {
-  const { state, dispatch } = useContext(StoreContext);
+  const { state } = useContext(StoreContext);
   const classes = useStyles();
-
-  // useEffect(() => {
-
-  // });
   return (
     <Container maxWidth="lg" className={classes.home}>
       <div className={classes.gameIcons}>

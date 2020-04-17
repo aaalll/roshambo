@@ -8,6 +8,7 @@ import Badge from '@material-ui/core/Badge';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import CallIcon from '@material-ui/icons/Call';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -56,6 +57,11 @@ const Header: React.FC = () => {
   ] = React.useState<null | HTMLElement>(null);
 
   const [
+    anchorCallListEl,
+    setAnchorCallListEl
+  ] = React.useState<null | HTMLElement>(null);
+
+  const [
     mobileMoreAnchorEl,
     setMobileMoreAnchorEl
   ] = React.useState<null | HTMLElement>(null);
@@ -67,9 +73,18 @@ const Header: React.FC = () => {
     setAnchorGameListEl(event.currentTarget);
   };
 
+  const handleCallLisClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorGameListEl(event.currentTarget);
+  };
+
   const handleGameLisClose = (elem: any) => {
     history.push(`/game/${elem.id}`);
     setAnchorGameListEl(null);
+  };
+
+  const handleCallLisClose = (elem: any) => {
+    history.push(`/call/${elem.id}`);
+    setAnchorCallListEl(null);
   };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -146,7 +161,24 @@ const Header: React.FC = () => {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
-            <p>Notifications</p>
+            <p>Games</p>
+          </MenuItem>
+        )}
+     {state.user &&
+        state.calls &&
+        state.calls.rows &&
+        state.calls.rows.length > 0 && (
+          <MenuItem>
+            <IconButton
+            aria-label={`show ${state.calls.rows.length} notifications`}
+            color="inherit"
+              onClick={handleCallLisClick}
+            >
+              <Badge badgeContent={state.calls.rows.length} color="secondary">
+                <CallIcon />
+              </Badge>
+            </IconButton>
+            <p>Calls</p>
           </MenuItem>
         )}
       <MenuItem onClick={handleProfileMenuOpen}>
@@ -162,7 +194,6 @@ const Header: React.FC = () => {
       </MenuItem>
     </Menu>
   );
-  console.log('state.games.rows', state.games.rows);
 
   return (
     <Toolbar>
@@ -171,6 +202,9 @@ const Header: React.FC = () => {
         className={classes.menuButton}
         color="inherit"
         aria-label="menu"
+        onClick={()=>{
+          history.push('/')
+        }}
       >
         <i className="fal fa-hand-scissors"></i>
       </IconButton>
@@ -179,15 +213,13 @@ const Header: React.FC = () => {
       </Typography>
       <div className={classes.grow} />
       <div className={classes.sectionDesktop}>
-        {!state.client && (
-          <IconButton
-            color="inherit"
-            aria-label="connect"
-            onClick={reloadWaller}
-          >
-            <AutorenewIcon />
-          </IconButton>
-        )}
+        <IconButton
+          color="inherit"
+          aria-label="connect"
+          onClick={reloadWaller}
+        >
+          <AutorenewIcon />
+        </IconButton>
         {state.client && !state.user && (
           <Button color="inherit" aria-label="Login" onClick={reloadWaller}>
             Login
@@ -205,6 +237,17 @@ const Header: React.FC = () => {
             </Badge>
           </IconButton>
         )}
+        {state.user && state.calls.rows && state.calls.rows.length > 0 && (
+          <IconButton
+            aria-label={`show ${state.calls.rows.length} notifications`}
+            color="inherit"
+            onClick={handleCallLisClick}
+          >
+            <Badge badgeContent={state.games.rows.length} color="secondary">
+              <CallIcon />
+            </Badge>
+          </IconButton>
+        )}
         {state.user && state.games.rows && state.games.rows.length > 0 && (
           <Menu
             id="game-list-menu"
@@ -215,6 +258,21 @@ const Header: React.FC = () => {
           >
             {state.games.rows.map((elem: any, index) => (
               <MenuItem key={index} onClick={() => handleGameLisClose(elem)}>
+                {elem.challenger}
+              </MenuItem>
+            ))}
+          </Menu>
+        )}
+        {state.user && state.calls.rows && state.calls.rows.length > 0 && (
+          <Menu
+            id="game-list-menu"
+            anchorEl={anchorCallListEl}
+            keepMounted
+            open={Boolean(anchorCallListEl)}
+            onClose={handleCallLisClose}
+          >
+            {state.calls.rows.map((elem: any, index) => (
+              <MenuItem key={index} onClick={() => handleCallLisClose(elem)}>
                 {elem.challenger}
               </MenuItem>
             ))}

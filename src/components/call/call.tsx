@@ -7,17 +7,16 @@ import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import ReplayIcon from '@material-ui/icons/Replay';
-import CancelIcon from '@material-ui/icons/Cancel';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
-import LaunchIcon from '@material-ui/icons/Launch';
 
 import history from 'utils/history';
-import { firstMove, secondMove, restartGame, closeGame } from 'store/sagas/sagas';
+import {
+  firstMove,
+  secondMove,
+} from 'store/sagas/sagas';
 import { StoreContext } from 'store/reducers/reducer';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,8 +26,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     media: {
       [theme.breakpoints.down('md')]: {
-        backgroundColor: 'red',
-      },
+        backgroundColor: 'red'
+      }
     },
     paper: {
       padding: theme.spacing(2),
@@ -40,8 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-// import './game.css';
 
 interface GameIconProps {
   move: number;
@@ -66,7 +63,7 @@ const GameIcon: React.SFC<GameIconProps> = (props: any) => {
   return res;
 };
 
-const Game: React.FC = () => {
+const Call: React.FC = () => {
   const { state, dispatch } = useContext(StoreContext);
   let { id } = useParams();
   const classes = useStyles();
@@ -75,7 +72,7 @@ const Game: React.FC = () => {
 
   const isNullHash = (hash: any) => {
     return !hash || !Number.parseInt(hash, 16);
-  }
+  };
 
   useEffect(() => {
     if (!state.user) history.push('/');
@@ -94,18 +91,7 @@ const Game: React.FC = () => {
     secondMove({ dispatch, state })(id, challenger, by);
   };
 
-  const gameRestart = async (id: string) => {
-    await restartGame({ dispatch, state })(id);
-  };
-  const gameClose = async (id: string) => {
-    await closeGame({ dispatch, state })(id);
-    history.push('/');
-  };
-  const gameNew = async (id: string) => {
-    await closeGame({ dispatch, state })(id);
-    history.push('/');
-  };
-  const currentGame: any = state.games.rows.find((el: any) => {
+  const currentGame: any = state.calls.rows.find((el: any) => {
     return String(el.id) === id;
   });
 
@@ -122,82 +108,42 @@ const Game: React.FC = () => {
           <Card className={classes.root}>
             <CardHeader title={currentGame.host} />
             <CardContent>
-              {currentGame.accepted === 0 && (
-                <Typography variant="body2" color="textSecondary" component="p">
-                  Hi, <br /> I am waiting your Join
-                </Typography>
-              )}
-              {!isNullHash(currentGame.ph_move_hash) &&
+              {isNullHash(currentGame.ph_move_hash) &&
                 isNullHash(currentGame.pc_move_hash) && (
+                  <Typography component="p">I'll move now...</Typography>
+                )}
+              {!isNullHash(currentGame.pc_move_hash) &&
+                isNullHash(currentGame.pc_move_hash) && (
+                  <Typography component="p">I'll move now...</Typography>
+                )}
+              {isNullHash(currentGame.pc_move_hash) &&
+                !isNullHash(currentGame.ph_move_hash) && (
                   <Typography component="p">
-                    waiting on opponent move to confirm own move...
+                    waiting for oponent move...
                   </Typography>
                 )}
               {!isNullHash(currentGame.ph_move_hash) &&
                 !isNullHash(currentGame.pc_move_hash) &&
                 currentGame.ph_move === 0 && (
-                  <Typography
-                    variant="body2"
-                    color="textSecondary"
-                    component="p"
-                  >
-                    Please
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => {
-                        moveSecond(currentGame.id, currentGame.challenger, 1);
-                      }}
-                    >
-                      confirm your move...
-                    </Button>
+                  <Typography component="p">
+                    I'll confirm my move asap...
                   </Typography>
                 )}
+
               {currentGame.ph_move !== currentGame.ph_move_nonce && (
                 <Typography variant="body2" color="textSecondary" component="p">
                   Move confirmed: <GameIcon move={currentGame.ph_move} />
                 </Typography>
               )}
-              {currentGame.ph_move !== 0 && currentGame.ph_move === currentGame.ph_move_nonce && (
+              {currentGame.ph_move === currentGame.ph_move_nonce && (
                 <Typography variant="body2" color="textSecondary" component="p">
                   I was too lazy to confirm a move :)
                 </Typography>
               )}
-              {currentGame.ph_move === 0 && currentGame.ph_move === currentGame.ph_move_nonce && (
-                <Typography variant="body2" color="textSecondary" component="p">
-                  You turn :)
-                </Typography>
-              )}
-              {isNullHash(currentGame.ph_move_hash) && (
-                <Typography variant="body2" color="textSecondary" component="p">
-                  <IconButton
-                    aria-label="1"
-                    onClick={() => {
-                      moveFirst(currentGame.id, 1, currentGame.challenger, 1);
-                    }}
-                  >
-                    <GameIcon move={1} />
-                  </IconButton>
-                  <IconButton
-                    aria-label="2"
-                    onClick={() => {
-                      moveFirst(currentGame.id, 2, currentGame.challenger, 1);
-                    }}
-                  >
-                    <GameIcon move={2} />
-                  </IconButton>
-                  <IconButton
-                    aria-label="3"
-                    onClick={() => {
-                      moveFirst(currentGame.id, 3, currentGame.challenger, 1);
-                    }}
-                  >
-                    <GameIcon move={3} />
-                  </IconButton>
-                </Typography>
-              )}
+
               {currentGame.winner !== 'none' &&
-                currentGame.winner === currentGame.host && (
+                currentGame.winner === currentGame.host &&
+                currentGame.winner !== 'self' && (
                   <Typography component="p">YOU WIN</Typography>
                 )}
               {currentGame.winner !== 'none' &&
@@ -218,13 +164,6 @@ const Game: React.FC = () => {
           <Card className={classes.root}>
             <CardHeader
               avatar={<SportsEsportsIcon />}
-              action={
-                <IconButton aria-label="settings" onClick={() => {
-                  gameRestart(currentGame.id);
-                }}>
-                  <ReplayIcon />
-                </IconButton>
-              }
               title="History"
             />
             <CardContent>
@@ -268,7 +207,8 @@ const Game: React.FC = () => {
                         {currentGame.pc_move_nonce}
                         <a
                           href={`https://md5calc.com/hash/sha256/${currentGame.pc_move}${currentGame.pc_move_nonce}`}
-                          target="_blank" rel="noopener noreferrer"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           check
                         </a>
@@ -298,7 +238,8 @@ const Game: React.FC = () => {
                         {currentGame.ph_move_nonce}
                         <a
                           href={`https://md5calc.com/hash/sha256/${currentGame.ph_move}${currentGame.ph_move_nonce}`}
-                          target="_blank" rel="noopener noreferrer"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           check
                         </a>
@@ -311,18 +252,6 @@ const Game: React.FC = () => {
                   </Typography>
                 )}
             </CardContent>
-            <CardActions disableSpacing>
-              <IconButton aria-label="add to favorites" onClick={() => {
-                gameNew(currentGame.id);
-              }}>
-                <LaunchIcon />
-              </IconButton>
-              <IconButton aria-label="share" onClick={() => {
-                gameClose(currentGame.id);
-              }}>
-                <CancelIcon />
-              </IconButton>
-            </CardActions>
           </Card>
         </Paper>
       </Grid>
@@ -331,34 +260,27 @@ const Game: React.FC = () => {
           <Card className={classes.root}>
             <CardHeader title={currentGame.challenger} />
             <CardContent>
-              {currentGame.accepted === 0 && (
-                <Typography component="p">
-                  Looking opportunity to Join
-                </Typography>
-              )}
               {!isNullHash(currentGame.pc_move_hash) &&
                 isNullHash(currentGame.ph_move_hash) && (
                   <Typography component="p">
-                    waiting for oponent move...
+                    waiting on oponent move to confirm own move...
                   </Typography>
                 )}
 
               {!isNullHash(currentGame.pc_move_hash) &&
-                isNullHash(currentGame.ph_move_hash) && (
+                !isNullHash(currentGame.ph_move_hash) &&
+                currentGame.pc_move === 0 && (
                   <Typography component="p">
-                    I am waiting your turn to confirm my move...
-                  </Typography>
-                )}
-              {isNullHash(currentGame.pc_move_hash) &&
-                !isNullHash(currentGame.ph_move_hash) && (
-                  <Typography component="p">
-                    waiting for opponent move...
-                  </Typography>
-                )}
-              {!isNullHash(currentGame.ph_move_hash) &&
-                !isNullHash(currentGame.pc_move_hash) && currentGame.pc_move === 0 && (
-                  <Typography component="p">
-                    I'll confirm my move asap...
+                    Please
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() => {
+                        moveSecond(currentGame.id, currentGame.challenger, 2);
+                      }}
+                    >
+                      confirm your move...
+                    </Button>
                   </Typography>
                 )}
 
@@ -380,8 +302,38 @@ const Game: React.FC = () => {
                   </Typography>
                 )}
 
+              {isNullHash(currentGame.pc_move_hash) && (
+                <Typography variant="body2" color="textSecondary" component="p">
+                  <IconButton
+                    aria-label="1"
+                    onClick={() => {
+                      moveFirst(currentGame.id, 1, currentGame.challenger, 2);
+                    }}
+                  >
+                    <GameIcon move={1} />
+                  </IconButton>
+                  <IconButton
+                    aria-label="2"
+                    onClick={() => {
+                      moveFirst(currentGame.id, 2, currentGame.challenger, 2);
+                    }}
+                  >
+                    <GameIcon move={2} />
+                  </IconButton>
+                  <IconButton
+                    aria-label="3"
+                    onClick={() => {
+                      moveFirst(currentGame.id, 3, currentGame.challenger, 2);
+                    }}
+                  >
+                    <GameIcon move={3} />
+                  </IconButton>
+                </Typography>
+              )}
+
               {currentGame.winner !== 'none' &&
-                currentGame.winner === currentGame.challenger && (
+                currentGame.winner === currentGame.challenger &&
+                currentGame.winner !== 'self' && (
                   <Typography component="p">YOU WIN</Typography>
                 )}
               {currentGame.winner !== 'none' &&
@@ -402,4 +354,4 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+export default Call;

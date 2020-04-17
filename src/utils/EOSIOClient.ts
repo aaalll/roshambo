@@ -44,7 +44,9 @@ class EOSIOClient {
 
   public init = async () => {
     ScatterJS.plugins(new ScatterEOS());
-    const connectionOptions = { initTimeout: 1500, linkTimeout: 6000 };
+    const connectionOptions = { };
+    // const connectionOptions = { initTimeout: 1500, linkTimeout: 60000 };
+
     try {
       this.network = ScatterJS.Network.fromJson(this.environment.network);
       this.rpc = new JsonRpc(this.network.fullhost());
@@ -67,7 +69,7 @@ class EOSIOClient {
 
   public showScatterError = (error: any) => {
     if (!error) return;
-    console.log('showScatterError error', error);
+    console.log('EOSIOClient::showScatterError error', error);
     let msg = error.message;
 
     if (error.type === 'account_missing' && error.code === 402) {
@@ -83,20 +85,23 @@ class EOSIOClient {
       msg = "You can't close game in the middle";
     }
     this.error = msg;
-    console.log('showScatterError msg', msg);
+    console.log('EOSIOClient::showScatterError msg', msg);
     return msg;
   };
 
   public showErr(error: any) {
     let error_;
-    console.error('showErr', error);
+    console.error('EOSIOClient::showErr', error);
     try {
+      if (error.message){
+        this.error = error.message;
+        return error.message;
+      }
       error_ = JSON.parse(error);
       this.error = error_.error.details[0].message;
       return this.error;
     } catch (e) {
       this.error = 'Strange issue happen';
-      console.error(error_);
       return 'Strange issue happen';
     }
   }
@@ -161,7 +166,7 @@ class EOSIOClient {
     let found = false;
     this.games.forEach((elem: any) => {
       if (elem.challenger === challenger) {
-        history.push(`/game/${challenger}/${elem.id}`);
+        history.push(`/game/${elem.id}`);//${challenger}/
         found = true;
       }
     });
@@ -173,8 +178,6 @@ class EOSIOClient {
   }
 
   public async getGameChallenges() {
-    console.log('getGameChallenges 0');
-
     if (!this.account.name || !this.rpc) {
       return { games: [], error: 'Login first' };
     }
@@ -210,7 +213,7 @@ class EOSIOClient {
         code: this.environment.gcontract,
         table: 'games',
         limit: 100,
-        table_key: 'host',
+        table_key: 'challenger',
         lower_bound: this.account.name,
         upper_bound: this.account.name + 'a',
         key_type: 'i64',
@@ -225,8 +228,6 @@ class EOSIOClient {
   }
 
   public async createGame(challenger: string) {
-    console.log(challenger);
-
     if (challenger === this.account.name) {
       throw new Error("Account can't be the same.");
     }
@@ -265,15 +266,13 @@ class EOSIOClient {
       this.findGame(challenger)
       return { transact };
     } catch (error) {
-      console.log('result', error);
+      console.log('EOSIOClient::createGame', error);
       return { error };
     }
 
   }
 
   public async closeGame(id: string) {
-    console.log('EOSIOClient closeGame', id);
-    
     try {
       const account = ScatterJS.account('eos');
       const transact = await this.eos.transact(
@@ -303,17 +302,16 @@ class EOSIOClient {
       );
       return { transact };
     } catch (error) {
-      console.log('result', error);
+      console.log('EOSIOClient::closeGame', error);
       return { error };
     }
   }
 
-  public async restartGame(id: string, challenger: string) {
+  public async restartGame(id: string) {
     try {
       const account = ScatterJS.account('eos');
       const host = this.account.name;
-      const contract = await this.eos.getContract(this.environment.gcontract);
-      console.log('restart', contract);
+      // const contract = await this.eos.getContract(this.environment.gcontract);
       const transact = await this.eos.transact(
         {
           actions: [
@@ -341,7 +339,7 @@ class EOSIOClient {
       );
       return { transact };
     } catch (error) {
-      console.log('result', error);
+      console.log('EOSIOClient::restartGame', error);
       return { error };
     }
   }
@@ -352,18 +350,20 @@ class EOSIOClient {
     challenger: string,
     by: number
   ) {
+    
     const host = this.account.name;
     this.movement[host] = move;
     this.nonce[host] = Math.floor(Math.random() * 100000000 + 1);
 
     this.setGame(`rps_${id}_move`, `${this.movement[host]}`);
     this.setGame(`rps_${id}_nonce`, `${this.nonce[host]}`);
-    console.log('move01', this.movement[host], this.nonce[host]);
+    
     let my_move = this.movement[host] + '' + this.nonce[host];
     let move_hash = ecc.sha256(my_move);
     let by_name = by === 1 ? host : challenger;
     try {
       const account = ScatterJS.account('eos');
+      
       const transact = await this.eos.transact(
         {
           actions: [
@@ -392,7 +392,7 @@ class EOSIOClient {
       );
       return { transact };
     } catch (error) {
-      console.log('result', error);
+      console.log('EOSIOClient::move01', JSON.stringify(error));
       return { error };
     }
   }
@@ -407,10 +407,7 @@ class EOSIOClient {
     if (!this.movement[host]) {
       this.movement[host] = Number(this.getGame(`rps_${id}_move`));
     }
-    console.log('move02', this.movement[host], this.nonce[host]);
-    
 
-    console.log(this.nonce, this.movement);
     try {
       const account = ScatterJS.account('eos');
       const transact = await this.eos.transact(
@@ -442,30 +439,9 @@ class EOSIOClient {
       );
       return { transact };
     } catch (error) {
-      console.log('move02 error', error);
+      console.log('EOSIOClient::move01', JSON.stringify(error));
       return { error };
     }
-
-    // this.eos
-    //   .contract(this.environment.gcontract)
-    //   .then((contract: any) => {
-    //     contract
-    //       .move2(id, by_name, this.movement[host], this.nonce[host], {
-    //         authorization: [this.account.name]
-    //       })
-    //       .then((res: any) => {
-    //         console.log(res);
-    //         //getMyGames();
-    //         //updateGameView();
-    //         this.clearCachedGames(id);
-    //       })
-    //       .catch((error: any) => {
-    //         this.showErr(error);
-    //       });
-    //   })
-    //   .catch((error: any) => {
-    //     this.showErr(error);
-    //   });
   }
 
   public setGame(cname: string, cvalue: string) {
