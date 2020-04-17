@@ -74,7 +74,7 @@ const Header: React.FC = () => {
   };
 
   const handleCallLisClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorGameListEl(event.currentTarget);
+    setAnchorCallListEl(event.currentTarget);
   };
 
   const handleGameLisClose = (elem: any) => {
@@ -243,7 +243,7 @@ const Header: React.FC = () => {
             color="inherit"
             onClick={handleCallLisClick}
           >
-            <Badge badgeContent={state.games.rows.length} color="secondary">
+            <Badge badgeContent={state.calls.rows.length} color="secondary">
               <CallIcon />
             </Badge>
           </IconButton>
@@ -273,7 +273,7 @@ const Header: React.FC = () => {
           >
             {state.calls.rows.map((elem: any, index) => (
               <MenuItem key={index} onClick={() => handleCallLisClose(elem)}>
-                {elem.challenger}
+                {elem.host}
               </MenuItem>
             ))}
           </Menu>
