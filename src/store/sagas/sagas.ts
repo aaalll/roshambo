@@ -174,16 +174,28 @@ export function closeGame({ dispatch, state }: StoreProps) {
 
 export function loadTop({ dispatch, state }: StoreProps) {
   return async function (): Promise<boolean | null> {
+    console.log('loadTop 0');
 
     dispatch(setStatus('loading'));
-    const response = await axios('/api/v1/top100');
-    const responseOK = response && response.status === 200 && response.statusText === 'OK';
-    if (responseOK) {
-        let data = await response.data;
-        dispatch(setTop(data));
-        dispatch(setStatus('loaded'));
-        return true;
-    } else {
+    console.log('loadTop 1');
+    try {
+      const response = await axios('/api/v1/top100');
+      console.log('loadTop response', response);
+      const responseOK = response && response.status === 200 && response.statusText === 'OK';
+      if (responseOK) {
+          let data = await response.data;
+          dispatch(setTop(data));
+          dispatch(setStatus('loaded'));
+          return true;
+      } else {
+        console.log('loadTop err', responseOK);
+        dispatch(setTop([]));
+        dispatch(setStatus('error'));
+        return false;
+      }
+    } catch (err) {
+      console.log('loadTop err', err);
+      dispatch(setTop([]));
       dispatch(setStatus('error'));
       return false;
     }

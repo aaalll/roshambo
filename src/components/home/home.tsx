@@ -108,7 +108,7 @@ const UserInput: React.FC = () => {
         Please enter opponents <b>EOS</b> account name and press create the{' '}
         <b>game</b>. Its totally <b>free</b>
       </Typography>
-      <Typography gutterBottom component="p" className={classes.content}>
+      <Typography gutterBottom component="div" className={classes.content}>
         {recentPlayers.length > 0 ? 'Recent players: ' : ''}
         {recentPlayers.map((value: any, index: number) => {
           return (
@@ -127,7 +127,7 @@ const UserInput: React.FC = () => {
 
       <FormControl className={classes.margin}>
         <Grid container spacing={1} alignItems="flex-end" className={classes.challenger}>
-          <Grid item alignItems="center">
+          <Grid item>
             <AccountCircle />
           </Grid>
           <Grid item style={{ flexGrow: 1 }}>

@@ -114,7 +114,7 @@ export const setRefresh = (refresh: String) => ({
   }
 });
 
-export const setTop = (top: String) => ({
+export const setTop = (top: []) => ({
   type: SET_TOP,
   payload: {
     top

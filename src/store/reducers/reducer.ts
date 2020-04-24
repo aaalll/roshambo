@@ -54,7 +54,7 @@ export const initialState: StoreState = {
     next_key: '',
     rows: []
   },
-  top: [],
+  top: null,
 };
 
 export default function rootReducer(state: StoreState, action: any) {

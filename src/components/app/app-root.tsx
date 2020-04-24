@@ -71,10 +71,8 @@ const AppRoot: React.FC = (props) => {
   // };
 
   useEffect(() => {
-    console.log('AppRoot useEffect', state);
     if (state.client && state.refresh === 'loaded') {
       const timer = setTimeout(() => {
-        console.log('=====>', new Date(), timer, state);
         getGameChallenges({ dispatch, state })();
       }, 5000);
       return () => clearTimeout(timer);

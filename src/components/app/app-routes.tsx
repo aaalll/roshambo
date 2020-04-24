@@ -9,6 +9,7 @@ import Game from 'components/game';
 import Call from 'components/call';
 import Games from 'components/games';
 import Calls from 'components/calls';
+import Top from 'components/top';
 
 const AppRoutes = () => (
   <Router history={history}>
@@ -19,7 +20,8 @@ const AppRoutes = () => (
       <Route path="/games" component={Games} />
       <Route exact path="/calls/:id" component={Call} />
       <Route exact path="/calls/" component={Calls} />
-      <Route exact path="top100" component={Game} />
+      <Route exact path="/top100" component={Top} />
+      <Route exact path="/top" component={Top} />
     </Switch>
   </Router>
 );

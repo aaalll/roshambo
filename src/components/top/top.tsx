@@ -19,15 +19,18 @@ import Button from '@material-ui/core/Button';
 import history from 'utils/history';
 import { StoreContext } from 'store/reducers/reducer';
 import Paper from '@material-ui/core/Paper';
-import { loadTop } from 'store/sagas/sagas';
+import { loadTop, loadWallet } from 'store/sagas/sagas';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     media: {
+      maxWidth: '550px',
+      minHeight: '350px',
+      margin: '10px auto',
+      color: '#fff',
       [theme.breakpoints.down('md')]: {}
     },
-    table: {
-    },
+    table: {},
     container: {
       maxWidth: '550px',
       height: '75%',
@@ -63,12 +66,20 @@ const Top: React.FC = () => {
   const classes = useStyles();
 
   useEffect(() => {
-    if (!state.user) history.push('/');
-    if (!state.top) {
-      loadTop({ dispatch, state })();
+    console.log('TOP', state.top, state.status);
+
+    if (state.top === null) {
+      console.log('TOP if', state.top, state.status);
+
+      if (state.status === 'loaded') {
+        console.log('top:>', state);
+        
+        setTimeout(() => {
+          loadTop({ dispatch, state })();
+        }, 5000);
+      }
     }
   });
-  
 
   const handleGame = (id: string) => {
     history.push(`/games/${id}`);
@@ -80,25 +91,23 @@ const Top: React.FC = () => {
     {
       row.winner !== 'none' &&
         row.winner === row.challenger &&
-        (result = row.challenger );
+        (result = row.challenger);
     }
     {
       row.winner !== 'none' &&
         row.winner !== row.challenger &&
         row.winner !== 'self' &&
-        (result = row.winner );
+        (result = row.winner);
     }
     {
-      row.winner === 'none' &&
-        row.pc_move &&
-        row.ph_move &&
-        (result = 'TIE');
+      row.winner === 'none' && row.pc_move && row.ph_move && (result = 'TIE');
     }
     return result;
   };
 
   return (
     <Grid container className={classes.media}>
+      <h2>Score Table</h2>
       <TableContainer component={Paper} className={classes.container}>
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
@@ -109,15 +118,18 @@ const Top: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {state.top.rows.map((row: any) => (
-              <StyledTableRow key={row.id}>
-                <StyledTableCell align="left">{row.challenger}</StyledTableCell>
-                <StyledTableCell align="left">{row.host}</StyledTableCell>
-                <StyledTableCell align="left">
-                  {renderResult(row)}
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+            {state.top &&
+              state.top.map((row: any) => (
+                <StyledTableRow key={row.id}>
+                  <StyledTableCell align="left">
+                    {row.challenger}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">{row.host}</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {renderResult(row)}
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
