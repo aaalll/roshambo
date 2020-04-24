@@ -166,7 +166,7 @@ class EOSIOClient {
     let found = false;
     this.games.forEach((elem: any) => {
       if (elem.challenger === challenger) {
-        history.push(`/game/${elem.id}`);//${challenger}/
+        history.push(`/games/${elem.id}`);//${challenger}/
         found = true;
       }
     });

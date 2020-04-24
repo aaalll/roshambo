@@ -9,6 +9,7 @@ export const SET_MESSAGE = '@global/SET_MESSAGE';
 export const SET_GAMES = '@games/SET_GAMES';
 export const SET_CALLS = '@games/SET_CALLS';
 export const SET_NEWDATA = '@games/SET_NEWDATA';
+export const SET_TOP = '@games/SET_TOP';
 export const SET_REFRESH = '@global/SET_REFRESH';
 
 export const LOGIN = '@auth/LOGIN';
@@ -110,5 +111,12 @@ export const setRefresh = (refresh: String) => ({
   type: SET_REFRESH,
   payload: {
     refresh
+  }
+});
+
+export const setTop = (top: String) => ({
+  type: SET_TOP,
+  payload: {
+    top
   }
 });

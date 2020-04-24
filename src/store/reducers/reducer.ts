@@ -11,9 +11,9 @@ import {
   SET_CALLS,
   SET_REFRESH,
   SET_NEWDATA,
-
+  SET_TOP,
   LOGOUT,
-  SET_MODAL,
+  SET_MODAL
 } from 'store/actions/actions';
 
 export interface StoreState {
@@ -27,6 +27,7 @@ export interface StoreState {
   refresh: string;
   games: ResponseTable;
   calls: ResponseTable;
+  top: any;
 }
 
 export interface StoreProps {
@@ -52,12 +53,13 @@ export const initialState: StoreState = {
     more: false,
     next_key: '',
     rows: []
-  }
+  },
+  top: [],
 };
 
 export default function rootReducer(state: StoreState, action: any) {
-  console.log('action.payload.games', action.type,  action.payload);
-  
+  console.log('action.payload.games', action.type, action.payload);
+
   switch (action.type) {
     case SET_WALLET:
       return {
@@ -97,7 +99,11 @@ export default function rootReducer(state: StoreState, action: any) {
         ...state,
         refresh: action.payload.refresh
       };
-
+    case SET_TOP:
+      return {
+        ...state,
+        top: action.payload.top
+      };
 
     case LOGOUT:
       return {

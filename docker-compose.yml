@@ -1,13 +1,13 @@
 version: '2'
 services:
-  onboard-client:
-    container_name: onboard-client
+  roshambo-client:
+    container_name: roshambo-client
     build:
       context: .
       dockerfile: ops/docker/Dockerfile
       args:
         - NODE_ENV=development
-    image: onboard-client
+    image: roshambo-client
     ports:
       - '3000:3000'
     volumes:

@@ -4,10 +4,12 @@ import {
   setRefresh,
   logout,
   setNewData,
+  setTop,
   setMessage
 } from 'store/actions/actions';
 import { StoreProps } from 'store/reducers/reducer';
 import EOSIOClient from '../../utils/EOSIOClient';
+import axios from 'axios';
 
 export function loadWallet({ dispatch, state }: StoreProps) {
   return async function (): Promise<boolean | null> {
@@ -170,6 +172,23 @@ export function closeGame({ dispatch, state }: StoreProps) {
   };
 }
 
+export function loadTop({ dispatch, state }: StoreProps) {
+  return async function (): Promise<boolean | null> {
+
+    dispatch(setStatus('loading'));
+    const response = await axios('/api/v1/top100');
+    const responseOK = response && response.status === 200 && response.statusText === 'OK';
+    if (responseOK) {
+        let data = await response.data;
+        dispatch(setTop(data));
+        dispatch(setStatus('loaded'));
+        return true;
+    } else {
+      dispatch(setStatus('error'));
+      return false;
+    }
+  };
+}
 
 export function createGame({ dispatch, state }: StoreProps) {
   return async function (challenger: string): Promise<boolean | null> {

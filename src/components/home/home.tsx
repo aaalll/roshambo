@@ -2,13 +2,9 @@ import React, { useContext, useState, ChangeEvent } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import {
   Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
   Container,
-  InputAdornment,
   FormControl,
+  Grid,
   TextField,
   Typography
 } from '@material-ui/core/';
@@ -22,12 +18,14 @@ import { createGame } from 'store/sagas/sagas';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     margin: {
-      margin: theme.spacing(1)
+      margin: '8px auto',
+      width: '100%',
+      fontSize: '13px'
     },
     gameIcons: {
       fontSize: '100px',
       marginLeft: '0px',
-      color: '#f0f',
+      color: '#fff',
       background: 'none',
       boxShadow: 'none',
       padding: '0px 20px'
@@ -35,10 +33,40 @@ const useStyles = makeStyles((theme: Theme) =>
     gameIcon: {
       margin: '10px'
     },
-    home: {},
+    home: {
+      margin: 'auto'
+    },
     game: {
       maxWidth: 345,
-      margin: 'auto'
+      margin: 'auto',
+      color: '#fff',
+      fontSize: '11px'
+    },
+    header: {
+      fontFamily: 'ProximaNova, "Helvetica Neue", Arial, sans-serif',
+      fontWeight: 'bolder',
+      fontSize: '20px'
+    },
+    chip: {
+      fontSize: '11px'
+    },
+    content: {
+      width: '100%',
+      fontSize: '11px'
+    },
+    challenger:{
+      height: '78px',
+    },
+    InputLabelProps: {
+      fontSize: '13px',
+      color: '#fff'
+    },
+    button: {
+      backgroundColor: 'white',
+      borderRadius: '20px',
+      margin: '10px',
+      padding: '10px 20px',
+      color: '#218838'
     }
   })
 );
@@ -49,8 +77,12 @@ const UserInput: React.FC = () => {
   const { state, dispatch } = useContext(StoreContext);
   const classes = useStyles();
   const [challenger, setChallenger] = useState<string>('');
-  const handleChangeChallenger = (e: InputEvent) =>
+  const [validateError, setValidateError] = useState<boolean>(false);
+
+  const handleChangeChallenger = (e: InputEvent) => {
+    setValidateError(true);
     setChallenger(e.target.value);
+  };
   const localPlayers = localStorage.getItem('players');
   const recentPlayers: string[] =
     localPlayers != null && localPlayers.length > 0
@@ -71,61 +103,58 @@ const UserInput: React.FC = () => {
   };
 
   return (
-    <Card className={classes.game}>
-      <CardActionArea>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            New game
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Please enter opponents <b>EOS</b> account name and press create the{' '}
-            <b>game</b>. Its totally <b>free</b>
-          </Typography>
-          {recentPlayers.length > 0 ? 'Recent players: ' : ''}
-          {recentPlayers.map((value: any, index: number) => {
-            return (
-              <Chip
-                icon={<FaceIcon />}
-                label={value}
-                key={index}
-                onClick={() => {
-                  setChallenger(value);
-                }}
-              />
-            );
-          })}
+    <div className={classes.game}>
+      <Typography gutterBottom component="p" className={classes.header}>
+        Please enter opponents <b>EOS</b> account name and press create the{' '}
+        <b>game</b>. Its totally <b>free</b>
+      </Typography>
+      <Typography gutterBottom component="p" className={classes.content}>
+        {recentPlayers.length > 0 ? 'Recent players: ' : ''}
+        {recentPlayers.map((value: any, index: number) => {
+          return (
+            <Chip
+              icon={<FaceIcon />}
+              label={value}
+              key={index}
+              className={classes.chip}
+              onClick={() => {
+                setChallenger(value);
+              }}
+            />
+          );
+        })}
+      </Typography>
 
-          <FormControl className={classes.margin}>
+      <FormControl className={classes.margin}>
+        <Grid container spacing={1} alignItems="flex-end" className={classes.challenger}>
+          <Grid item alignItems="center">
+            <AccountCircle />
+          </Grid>
+          <Grid item style={{ flexGrow: 1 }}>
             <TextField
-              className={classes.margin}
-              error={challenger.length < 10}
+              error={validateError && challenger.length < 10}
               id="input-with-icon-textfield"
-              label="Name"
+              label="Enter EOS account would like cause for a fight"
               value={challenger}
               helperText={validateName(challenger)}
               onChange={handleChangeChallenger}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle />
-                  </InputAdornment>
-                )
-              }}
+              fullWidth
+              InputLabelProps={{ className: classes.InputLabelProps }}
             />
-          </FormControl>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button
-          size="small"
-          color="primary"
-          onClick={createNewGame}
-          disabled={challenger.length < 10}
-        >
-          Create game
-        </Button>
-      </CardActions>
-    </Card>
+          </Grid>
+        </Grid>
+      </FormControl>
+
+      <Button
+        size="small"
+        color="primary"
+        onClick={createNewGame}
+        disabled={challenger.length < 10}
+        className={classes.button}
+      >
+        Create game
+      </Button>
+    </div>
   );
 };
 const Home: React.FC = () => {
@@ -133,11 +162,6 @@ const Home: React.FC = () => {
   const classes = useStyles();
   return (
     <Container maxWidth="lg" className={classes.home}>
-      <div className={classes.gameIcons}>
-        <i className={'fal fa-hand-rock ' + classes.gameIcon}></i>
-        <i className={'fal fa-hand-paper ' + classes.gameIcon}></i>
-        <i className={'fal fa-hand-scissors ' + classes.gameIcon}></i>
-      </div>
       {!state.user ? 'connect' : <UserInput />}
     </Container>
   );

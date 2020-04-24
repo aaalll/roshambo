@@ -9,12 +9,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* display: flex;
+  flex-direction: column; */
   height: 100%;
-  /* background: url(/images/section-background.svg) 50% 17vh no-repeat, linear-gradient(to left top, rgba(33, 136, 56, 0.75), rgb(33, 136, 56)) 0px 0px no-repeat; */
-  background: url(/images/bg.png);
-  background-size: cover;
-  background-position: top left;
-  background-repeat: no-repeat;
 }
 @media (max-width: 768px) {
   body {

@@ -1,5 +1,11 @@
 import React, { useContext, useEffect } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import {
+  makeStyles,
+  Theme,
+  createStyles,
+  MuiThemeProvider,
+  createMuiTheme
+} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 // import Snackbar from '@material-ui/core/Snackbar';
@@ -13,17 +19,39 @@ import { StoreContext } from 'store/reducers/reducer';
 // import { setMessage } from 'store/actions/actions';
 import { getGameChallenges } from 'store/sagas/sagas';
 
+const theme = createMuiTheme({
+  palette: {
+    secondary: {
+      main: '#006700'
+    },
+    primary: {
+      main: '#218838'
+    }
+  }
+});
+
+// colorPrimary: {
+//   backgroundColor: '#218838',
+// },
+// colorSecondary: {
+//   backgroundColor: '#006700',
+// }
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     App: {
       textAlign: 'center',
       height: '100%',
-      justifyContent: 'flex-start'
+      justifyContent: 'flex-start',
+      flexGrow: 1
     },
     container: {
-      [theme.breakpoints.down('md')]: {
-
-      }
+      flexGrow: 1,
+      [theme.breakpoints.down('md')]: {}
+    },
+    header: {
+      background: 'none',
+      boxShadow: 'none',
     }
   })
 );
@@ -42,12 +70,11 @@ const AppRoot: React.FC = (props) => {
   //   dispatch(setMessage(null));
   // };
 
-
   useEffect(() => {
     console.log('AppRoot useEffect', state);
     if (state.client && state.refresh === 'loaded') {
       const timer = setTimeout(() => {
-        console.log('=====>', new Date(), timer, state)
+        console.log('=====>', new Date(), timer, state);
         getGameChallenges({ dispatch, state })();
       }, 5000);
       return () => clearTimeout(timer);
@@ -55,21 +82,22 @@ const AppRoot: React.FC = (props) => {
   }, [state, dispatch]); //?
 
   return (
-    <Grid
-      container
-      className={classes.App}
-      direction="column"
-      justify="space-between"
-      alignItems="center"
-    >
-      <AppBar position="static">
-        <Header />
-      </AppBar>
+    <MuiThemeProvider theme={theme}>
+      <Grid
+        container
+        className={classes.App}
+        direction="column"
+        justify="space-between"
+        alignItems="center"
+      >
+        <AppBar position="static" className={classes.header}>
+          <Header />
+        </AppBar>
 
-      <Grid container spacing={0} className={classes.container}>
-        {props.children}
-      </Grid>
-      {/* <Snackbar open={!!state.message} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Grid container spacing={0} className={classes.container}>
+          {props.children}
+        </Grid>
+        {/* <Snackbar open={!!state.message} autoHideDuration={6000} onClose={handleSnackbarClose}>
         <MuiAlert
           elevation={6}
           variant="filled"
@@ -83,8 +111,9 @@ const AppRoot: React.FC = (props) => {
             : 'Something wrong!'}
         </MuiAlert>
       </Snackbar> */}
-      <Footer />
-    </Grid>
+        <Footer />
+      </Grid>
+    </MuiThemeProvider>
   );
 };
 

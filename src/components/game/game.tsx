@@ -11,7 +11,9 @@ import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import ReplayIcon from '@material-ui/icons/Replay';
+import RepeatIcon from '@material-ui/icons/Repeat';
+
+
 import CancelIcon from '@material-ui/icons/Cancel';
 import SportsEsportsIcon from '@material-ui/icons/SportsEsports';
 import LaunchIcon from '@material-ui/icons/Launch';
@@ -70,9 +72,6 @@ const Game: React.FC = () => {
   const { state, dispatch } = useContext(StoreContext);
   let { id } = useParams();
   const classes = useStyles();
-  // const nullHash =
-  //   '0000000000000000000000000000000000000000000000000000000000000000';
-
   const isNullHash = (hash: any) => {
     return !hash || !Number.parseInt(hash, 16);
   }
@@ -222,7 +221,7 @@ const Game: React.FC = () => {
                 <IconButton aria-label="settings" onClick={() => {
                   gameRestart(currentGame.id);
                 }}>
-                  <ReplayIcon />
+                  <RepeatIcon />
                 </IconButton>
               }
               title="History"
