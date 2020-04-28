@@ -3,7 +3,7 @@ import {
   setStatus,
   setRefresh,
   logout,
-  setNewData,
+  setGamesData,
   setTop,
   setMessage
 } from 'store/actions/actions';
@@ -58,7 +58,12 @@ export function getGameChallenges({ dispatch, state }: StoreProps) {
       const loadedGames = await eosClient.getGameChallenges();
       const calledGames = await eosClient.getMyGamesCalls();
       if (!loadedGames.error && !calledGames.error) {
-        dispatch(setNewData(loadedGames.games, calledGames.calls));
+        const newList = {
+          more: loadedGames.games.more || calledGames.calls.more,
+          next_key: loadedGames.games.next_key + ' ' + calledGames.calls.next_key,
+          rows: loadedGames.games.rows.concat(calledGames.calls.rows),
+        }
+        dispatch(setGamesData(newList ));
       } else {
         dispatch(setMessage({ type: 'error', text: loadedGames.error || calledGames.error }));
         dispatch(setRefresh('loaded'));

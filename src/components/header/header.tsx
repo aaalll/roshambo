@@ -73,9 +73,9 @@ const Header: React.FC = () => {
     history.push(`/top/`);
   };
 
-  const handleCallLisClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    history.push(`/calls/`);
-  };
+  // const handleCallLisClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   history.push(`/calls/`);
+  // };
 
   // const handleGameLisClose = (elem: any) => {
   //   history.push(`/games/${elem.id}`);
@@ -172,7 +172,7 @@ const Header: React.FC = () => {
         >
           Top 100&nbsp;
         </Button>
-        {state.user && (
+        {/* {state.user && (
           <Button
             color="inherit"
             onClick={handleCallLisClick}
@@ -182,7 +182,7 @@ const Header: React.FC = () => {
               Calls&nbsp;
             </Badge>
           </Button>
-        )}
+        )} */}
 
         {state.user && (
           <Button color="inherit" onClick={handleProfileMenuOpen}>
@@ -213,7 +213,7 @@ const Header: React.FC = () => {
               </IconButton>
             </MenuItem>
           )}
-        {state.user &&
+        {/*state.user &&
           state.calls &&
           state.calls.rows &&
           state.calls.rows.length > 0 && (
@@ -228,7 +228,7 @@ const Header: React.FC = () => {
                 </Badge>
               </IconButton>
             </MenuItem>
-          )}
+          )*/}
 
         <MenuItem>
           <IconButton

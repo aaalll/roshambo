@@ -84,10 +84,11 @@ const UserInput: React.FC = () => {
     setChallenger(e.target.value);
   };
   const localPlayers = localStorage.getItem('players');
+  
   const recentPlayers: string[] =
     localPlayers != null && localPlayers.length > 0
-      ? localPlayers.split(',')
-      : [];
+      ? localPlayers.split(',').concat(state.environment.botName).filter((v, i, arr) => arr.indexOf(v)==i)
+      : [state.environment.botName];
   const createNewGame = () => {
     createGame({ dispatch, state })(challenger);
   };

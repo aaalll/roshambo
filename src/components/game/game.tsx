@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect , useState} from 'react';
 import { useParams } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
@@ -80,17 +80,23 @@ const Game: React.FC = () => {
     if (!state.user) history.push('/');
   });
 
-  const moveFirst = (
+  const [moved, setMoved] = useState<boolean>(false);
+
+  const moveFirst = async (
     id: string,
     move: number,
     challenger: string,
     by: number
   ) => {
-    firstMove({ dispatch, state })(id, move, challenger, by);
+    setMoved(true);
+    await firstMove({ dispatch, state })(id, move, challenger, by);
+    setMoved(false);
   };
 
-  const moveSecond = (id: string, challenger: string, by: number) => {
-    secondMove({ dispatch, state })(id, challenger, by);
+  const moveSecond = async (id: string, challenger: string, by: number) => {
+    setMoved(true);
+    await secondMove({ dispatch, state })(id, challenger, by);
+    setMoved(false);
   };
 
   const gameRestart = async (id: string) => {
@@ -171,6 +177,7 @@ const Game: React.FC = () => {
                 <Typography variant="body2" color="textSecondary" component="p">
                   <IconButton
                     aria-label="1"
+                    disabled={moved}
                     onClick={() => {
                       moveFirst(currentGame.id, 1, currentGame.challenger, 1);
                     }}
@@ -179,6 +186,7 @@ const Game: React.FC = () => {
                   </IconButton>
                   <IconButton
                     aria-label="2"
+                    disabled={moved}
                     onClick={() => {
                       moveFirst(currentGame.id, 2, currentGame.challenger, 1);
                     }}
@@ -187,6 +195,7 @@ const Game: React.FC = () => {
                   </IconButton>
                   <IconButton
                     aria-label="3"
+                    disabled={moved}
                     onClick={() => {
                       moveFirst(currentGame.id, 3, currentGame.challenger, 1);
                     }}
