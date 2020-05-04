@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
@@ -10,16 +10,14 @@ import {
 } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-
-import history from 'utils/history';
+import TablePagination from '@material-ui/core/TablePagination';
 import { StoreContext } from 'store/reducers/reducer';
 import Paper from '@material-ui/core/Paper';
 import { loadTop, loadWallet } from 'store/sagas/sagas';
+import { StyledTableCell, StyledTableRow } from '../../common/table';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,78 +30,39 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     table: {},
     container: {
-      maxWidth: '550px',
-      height: '75%',
       minHeight: '300px',
-      margin: '50px auto'
-    }
+      margin: 'auto',
+      background: '#fff',
+      opacity: '0.9',
+      boxShadow: '0px 4px 40px rgba(0, 0, 0, 0.15)',
+    },
+    pagination: {
+      // 
+    },
   })
 );
 
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    head: {
-      backgroundColor: '#20883A',
-      color: theme.palette.common.white
-    },
-    body: {
-      fontSize: 14
-    }
-  })
-)(TableCell);
-
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      backgroundColor: 'none'
-    }
-  })
-)(TableRow);
 
 const Top: React.FC = () => {
   const { state, dispatch } = useContext(StoreContext);
   let { id } = useParams();
   const classes = useStyles();
-
+  const [page, setPage] = useState(0);
+  const rowsPerPage: number = 10;
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
   useEffect(() => {
-    console.log('TOP', state.top, state.status);
-
     if (state.top === null) {
-      console.log('TOP if', state.top, state.status);
-
       if (state.status === 'loaded') {
-        console.log('top:>', state);
-        
+        loadTop({ dispatch, state })();
+      } else {
         setTimeout(() => {
           loadTop({ dispatch, state })();
         }, 5000);
       }
     }
   });
-
-  const handleGame = (id: string) => {
-    history.push(`/games/${id}`);
-  };
-
-  const renderResult = (row: any) => {
-    let result: string = 'New game';
-
-    {
-      row.winner !== 'none' &&
-        row.winner === row.challenger &&
-        (result = row.challenger);
-    }
-    {
-      row.winner !== 'none' &&
-        row.winner !== row.challenger &&
-        row.winner !== 'self' &&
-        (result = row.winner);
-    }
-    {
-      row.winner === 'none' && row.pc_move && row.ph_move && (result = 'TIE');
-    }
-    return result;
-  };
 
   return (
     <Grid container className={classes.media}>
@@ -112,27 +71,34 @@ const Top: React.FC = () => {
         <Table className={classes.table} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell align="left">Challenger</StyledTableCell>
-              <StyledTableCell align="left">Defender</StyledTableCell>
-              <StyledTableCell align="left">Winner</StyledTableCell>
+              <StyledTableCell align="left">Player</StyledTableCell>
+              <StyledTableCell align="left">Games</StyledTableCell>
+              <StyledTableCell align="left">Wins</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {state.top &&
-              state.top.map((row: any) => (
-                <StyledTableRow key={row.id}>
-                  <StyledTableCell align="left">
-                    {row.challenger}
-                  </StyledTableCell>
-                  <StyledTableCell align="left">{row.host}</StyledTableCell>
-                  <StyledTableCell align="left">
-                    {renderResult(row)}
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
+              state.top
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row: any, index: number) => (
+                  <StyledTableRow key={index}>
+                    <StyledTableCell align="left">{row.player}</StyledTableCell>
+                    <StyledTableCell align="left">{row.games_played}</StyledTableCell>
+                    <StyledTableCell align="left">{row.games_win}</StyledTableCell>
+                  </StyledTableRow>
+                ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        component="div"
+        className={classes.pagination}
+        count={state.top?state.top.length:0}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onChangePage={handleChangePage}
+        rowsPerPageOptions={[]}
+      />
     </Grid>
   );
 };

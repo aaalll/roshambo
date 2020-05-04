@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect , useState} from 'react';
+import { useParams } from 'react-router-dom';
 
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -27,26 +28,31 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1
     },
     media: {
+      left: '1px',
+      height: '400px',
+      top: '33px',
+      background: 'rgba(244, 246, 243, 0.25)',
       opacity: 0.9,
+      boxShadow: '0px 4px 40px rgba(0, 0, 0, 0.15)',
       [theme.breakpoints.down('md')]: {
         //
       },
-      maxWidth: '1450px',
-      margin: 'auto',
-      paddingBottom: '20px',
     },
     paper: {
-      padding: 0,
+      padding: theme.spacing(2),
       textAlign: 'center',
-      maxWidth: '450px',
-      margin: 'auto',
       color: theme.palette.text.secondary
+    },
+    avatar: {
+      backgroundColor: 'red'
     },
     leftUser: {
       //
     }
   })
 );
+
+// import './game.css';
 
 interface GameIconProps {
   move: number;
@@ -71,24 +77,20 @@ const GameIcon: React.SFC<GameIconProps> = (props: any) => {
   return res;
 };
 
-
-interface GameProps {
-  id: number;
-}
-
-const Game: React.FC<GameProps> = (props) => {
+const Game: React.FC = () => {
   const { state, dispatch } = useContext(StoreContext);
+  let { id } = useParams();
   const classes = useStyles();
-  let { id } = props;
-
   const isNullHash = (hash: any) => {
     return !hash || !Number.parseInt(hash, 16);
   }
 
+  useEffect(() => {
+    if (!state.user) history.push('/');
+  });
+
   const [moved, setMoved] = useState<boolean>(false);
-  if (!id) {
-    return <div />;
-  }
+
   const moveFirst = async (
     id: string,
     move: number,
@@ -118,48 +120,21 @@ const Game: React.FC<GameProps> = (props) => {
     history.push('/');
   };
   const currentGame: any = state.games.rows.find((el: any) => {
-    return el.id === id;
+    return String(el.id) === id;
   });
 
   if (!currentGame) {
+    history.push('/');
     return <div />;
   }
   console.log('currentGame', currentGame.winner, currentGame.host, currentGame);
-
-  const renderResult = (currentGame: any, challenger: boolean) => {
-    let result: string = '';
-    const winner: string = challenger ? currentGame.challenger : currentGame.host;
-
-    if (
-      currentGame.winner !== 'none' &&
-      currentGame.winner === winner &&
-      currentGame.winner !== 'self'
-    ) {
-      result = 'YOU WIN';
-    }
-    if (
-      currentGame.winner !== 'none' &&
-      currentGame.winner !== winner &&
-      currentGame.winner !== 'self'
-    ) {
-      result = 'YOU LOSE';
-    }
-    if (currentGame.winner === 'none' && currentGame.pc_move && currentGame.ph_move) {
-      result = 'TIE';
-    }
-    if (result) {
-      return <Typography component="p">result</Typography>
-    } else {
-      return null
-    }
-  };
 
   return (
     <Grid container className={classes.media}>
       <Grid item sm={4} xs={12}>
         <Paper className={classes.paper}>
           <Card className={classes.root}>
-            <CardHeader title={currentGame.host} className={classes.leftUser} />
+            <CardHeader title={currentGame.host} className={classes.leftUser}/>
             <CardContent>
               {currentGame.accepted === 0 && (
                 <Typography variant="body2" color="textSecondary" component="p">
@@ -238,8 +213,19 @@ const Game: React.FC<GameProps> = (props) => {
                   </IconButton>
                 </Typography>
               )}
-
-              {renderResult(currentGame, false)}
+              {currentGame.winner !== 'none' &&
+                currentGame.winner === currentGame.host && (
+                  <Typography component="p">YOU WIN</Typography>
+                )}
+              {currentGame.winner !== 'none' &&
+                currentGame.winner !== currentGame.host && (
+                  <Typography component="p">YOU LOSE</Typography>
+                )}
+              {currentGame.winner === 'none' &&
+                currentGame.pc_move &&
+                currentGame.ph_move && (
+                  <Typography component="p">TIE</Typography>
+                )}
             </CardContent>
           </Card>
         </Paper>
@@ -249,6 +235,13 @@ const Game: React.FC<GameProps> = (props) => {
           <Card className={classes.root}>
             <CardHeader
               avatar={<SportsEsportsIcon />}
+              action={
+                <IconButton aria-label="settings" onClick={() => {
+                  gameRestart(currentGame.id);
+                }}>
+                  <RepeatIcon />
+                </IconButton>
+              }
               title="History"
             />
             <CardContent>
@@ -346,11 +339,6 @@ const Game: React.FC<GameProps> = (props) => {
               }}>
                 <CancelIcon />
               </IconButton>
-              <IconButton aria-label="settings" onClick={() => {
-                gameRestart(currentGame.id);
-              }}>
-                <RepeatIcon />
-              </IconButton>
             </CardActions>
           </Card>
         </Paper>
@@ -409,8 +397,20 @@ const Game: React.FC<GameProps> = (props) => {
                   </Typography>
                 )}
 
-              {renderResult(currentGame, true)}
-
+              {currentGame.winner !== 'none' &&
+                currentGame.winner === currentGame.challenger && (
+                  <Typography component="p">YOU WIN</Typography>
+                )}
+              {currentGame.winner !== 'none' &&
+                currentGame.winner !== currentGame.challenger &&
+                currentGame.winner !== 'self' && (
+                  <Typography component="p">YOU LOSE</Typography>
+                )}
+              {currentGame.winner === 'none' &&
+                currentGame.pc_move &&
+                currentGame.ph_move && (
+                  <Typography component="p">TIE</Typography>
+                )}
             </CardContent>
           </Card>
         </Paper>

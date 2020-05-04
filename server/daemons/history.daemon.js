@@ -73,9 +73,11 @@ function getAccountAggregation(){
 
 let elemsCounter = 0;
 function getActions(stat, cb){
+	console.log('\x1b[36m%s\x1b[0m', '====== getActions =====');
+
 	let limit = 1000;
 	let skip = stat.cursor_history;
-	let url = `${config.historyChain}/v1/history/get_actions/${config.contractName}/winns?sort=1&skip=${skip}&limit=${limit}`;
+	let url = `${config.historyChain}/v2/history/get_actions?account=${config.contractName}&filter=${config.contractName}:winns&sort=1&skip=${skip}&limit=${limit}`;
 	request.get(url, (error, response, body) => {
 			if (error){
 				return cb(error);
@@ -90,6 +92,7 @@ function getActions(stat, cb){
 			if (data.actions.length === 0){
 				return cb(null, stat);
 			}
+
 			saveAccounts(data, (err, result) => {
 					if (err){
 						return cb(err);
@@ -103,8 +106,9 @@ function getActions(stat, cb){
 }
 
 function saveAccounts (data, callback){
-		console.log('actions length', data.actions.length);
-	   	async.each(data.actions, (action, cb) => {
+	console.log('\x1b[36m%s\x1b[0m', '====== saveAccounts =====', data.actions.length);
+
+	async.each(data.actions, (action, cb) => {
 	   		HISTORY.find({ _id: action._id }, (err, result) => {
 	   			if (err){
 	   				log.error(err);

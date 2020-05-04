@@ -180,6 +180,13 @@ export function closeGame({ dispatch, state }: StoreProps) {
 export function loadTop({ dispatch, state }: StoreProps) {
   return async function (): Promise<boolean | null> {
     console.log('loadTop 0');
+    // if (state.status !== 'loaded') {
+
+    // }
+    // setTimeout(() => {
+    //   loadTop({ dispatch, state })();
+    // }, 5000);
+
 
     dispatch(setStatus('loading'));
     console.log('loadTop 1');
@@ -188,7 +195,7 @@ export function loadTop({ dispatch, state }: StoreProps) {
       console.log('loadTop response', response);
       const responseOK = response && response.status === 200 && response.statusText === 'OK';
       if (responseOK) {
-          let data = await response.data;
+          let data = await response.data.table_winners;
           dispatch(setTop(data));
           dispatch(setStatus('loaded'));
           return true;

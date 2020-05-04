@@ -22,7 +22,8 @@ config.MONGO_OPTIONS = {
 
 // api url for history
 config.daemonsON = true;
-config.historyChain = 'https://history.cryptolions.io';
+config.historyChain = 'https://jungle.eossweden.org';
+// config.historyChain = 'https://history.cryptolions.io';
 
 config.updateHistoryTime = 60; // every 5 sec
 config.apiV = 'v1'; // api version

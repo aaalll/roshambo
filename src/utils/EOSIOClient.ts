@@ -44,10 +44,12 @@ class EOSIOClient {
 
   public init = async () => {
     ScatterJS.plugins(new ScatterEOS());
-    const connectionOptions = { };
-    // const connectionOptions = { initTimeout: 1500, linkTimeout: 60000 };
+    // const connectionOptions = { };
+    const connectionOptions = { initTimeout: 15000, linkTimeout: 600000 };
 
     try {
+      console.log('this.environment', this.environment.network);
+      
       this.network = ScatterJS.Network.fromJson(this.environment.network);
       this.rpc = new JsonRpc(this.network.fullhost());
 
@@ -55,7 +57,7 @@ class EOSIOClient {
         this.dappName,
         { network: this.network },
         connectionOptions
-      );
+      )
       if (!connected) {
         throw new Error(
           "We couldn't connect to Scatter Desktop. Please setup scatter or install it."

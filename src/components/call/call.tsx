@@ -25,18 +25,21 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1
     },
     media: {
+      opacity: 0.9,
       [theme.breakpoints.down('md')]: {
-        backgroundColor: 'red'
-      }
+        //
+      },
+      maxWidth: '1450px',
+      margin: 'auto',
+      paddingBottom: '20px',
     },
     paper: {
-      padding: theme.spacing(2),
+      padding: 0,
       textAlign: 'center',
+      maxWidth: '450px',
+      margin: 'auto',
       color: theme.palette.text.secondary
     },
-    avatar: {
-      backgroundColor: 'red'
-    }
   })
 );
 
@@ -63,9 +66,14 @@ const GameIcon: React.SFC<GameIconProps> = (props: any) => {
   return res;
 };
 
-const Call: React.FC = () => {
+interface CallProps {
+  id: number;
+}
+
+
+const Call: React.FC<CallProps> = (props) => {
   const { state, dispatch } = useContext(StoreContext);
-  let { id } = useParams();
+  let { id } = props;
   const classes = useStyles();
   // const nullHash =
   //   '0000000000000000000000000000000000000000000000000000000000000000';
@@ -74,9 +82,10 @@ const Call: React.FC = () => {
     return !hash || !Number.parseInt(hash, 16);
   };
 
-  useEffect(() => {
-    if (!state.user) history.push('/');
-  });
+  console.log('id', id);
+  if (!id) {
+    return <div />;
+  }
 
   const moveFirst = (
     id: string,
@@ -91,15 +100,38 @@ const Call: React.FC = () => {
     secondMove({ dispatch, state })(id, challenger, by);
   };
 
-  const currentGame: any = state.calls.rows.find((el: any) => {
-    return String(el.id) === id;
+  const currentGame: any = state.games.rows.find((el: any) => {
+    return el.id === id;
   });
 
   if (!currentGame) {
-    history.push('/');
     return <div />;
   }
   console.log('currentGame', currentGame.winner, currentGame.host, currentGame);
+
+  const renderResult = (currentGame: any, challenger: boolean) => {
+    let result: string = '';
+    const winner: string = challenger ? currentGame.challenger : currentGame.host;
+
+    if (currentGame.winner !== 'none' && currentGame.winner === winner && currentGame.winner !== 'self') {
+      result = 'YOU WIN';
+    }
+    if (
+      currentGame.winner !== 'none' &&
+      currentGame.winner !== winner &&
+      currentGame.winner !== 'self'
+    ) {
+      result = 'YOU LOSE';
+    }
+    if (currentGame.winner === 'none' && currentGame.pc_move && currentGame.ph_move) {
+      result = 'TIE';
+    }
+    if (result) {
+      return <Typography component="p">result</Typography>
+    } else {
+      return null
+    }
+  };
 
   return (
     <Grid container className={classes.media}>
@@ -141,20 +173,8 @@ const Call: React.FC = () => {
                 </Typography>
               )}
 
-              {currentGame.winner !== 'none' &&
-                currentGame.winner === currentGame.host &&
-                currentGame.winner !== 'self' && (
-                  <Typography component="p">YOU WIN</Typography>
-                )}
-              {currentGame.winner !== 'none' &&
-                currentGame.winner !== currentGame.host && (
-                  <Typography component="p">YOU LOSE</Typography>
-                )}
-              {currentGame.winner === 'none' &&
-                currentGame.pc_move &&
-                currentGame.ph_move && (
-                  <Typography component="p">TIE</Typography>
-                )}
+              {renderResult(currentGame, false)}
+
             </CardContent>
           </Card>
         </Paper>
@@ -330,22 +350,8 @@ const Call: React.FC = () => {
                   </IconButton>
                 </Typography>
               )}
+              {renderResult(currentGame, true)}
 
-              {currentGame.winner !== 'none' &&
-                currentGame.winner === currentGame.challenger &&
-                currentGame.winner !== 'self' && (
-                  <Typography component="p">YOU WIN</Typography>
-                )}
-              {currentGame.winner !== 'none' &&
-                currentGame.winner !== currentGame.challenger &&
-                currentGame.winner !== 'self' && (
-                  <Typography component="p">YOU LOSE</Typography>
-                )}
-              {currentGame.winner === 'none' &&
-                currentGame.pc_move &&
-                currentGame.ph_move && (
-                  <Typography component="p">TIE</Typography>
-                )}
             </CardContent>
           </Card>
         </Paper>

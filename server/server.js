@@ -23,6 +23,8 @@ const customSlack   = require('./modules/slack.module');
 const logSlack      = customSlack.configure(config.loggerSlack.alerts);
 
 process.on('uncaughtException', (err) => {
+  log.error('uncaughtException', err);
+
     // logSlack(`======= UncaughtException Main Server :  ${err}`);
 });
 
@@ -86,8 +88,9 @@ app.use(express.static(path.join(__dirname, '../build')));
 if (config.daemonsON){
     require('./daemons/init.daemons')(config, logSlack);
 }
-// require('./router/main.router')(app, config, request, log);
-require(`./api/main.api.${config.apiV}`)(app, config, request, log, mongoMain);
+require('./router/main.router')(app, config, request, log);
+// require(`./api/main.api.${config.apiV}`)(app, config, request, log, mongoMain);
+require('./api/main.api.v1')(app, config, request, log, mongoMain);
 
 /*app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
@@ -130,6 +133,7 @@ function normalizePort(val) {
 
 function onError(error) {
   if (error.syscall !== 'listen') {
+    log.error('not listen');
     throw error;
   }
 

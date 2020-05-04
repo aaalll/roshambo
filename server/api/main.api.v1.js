@@ -5,9 +5,9 @@
 const async = require('async');
 const path 	= require('path');
 const cors  = require('cors');
+// const log           = log4js.getLogger('server');
 
 module.exports 	= function(router, config, request, log, mongoMain) {
-
 	const HISTORY = require('../models/history.model')(mongoMain);
 	const SETTINGS = require('../models/global.model')(mongoMain);
 
